@@ -1,81 +1,78 @@
 # Secure Health Records Using Algorand
 
-A blockchain-based secure health record management system using the Algorand blockchain.
+A blockchain-based secure health record management system using the Algorand blockchain, Python, FastAPI, and a web-based frontend.
 
 ## Overview
 
-This project explores the use of Algorand blockchain technology to provide secure access control, record integrity, and transparent authorization for healthcare records.
+This project demonstrates how Algorand blockchain technology can be used to manage healthcare record ownership, record integrity, and provider access permissions.
 
-The system follows a patient-controlled model in which patients can grant or revoke access to authorized healthcare providers.
+The system follows a patient-controlled access model. A health record is represented on-chain using a unique record ID and a cryptographic hash. The patient who registers the record becomes its owner and can grant or revoke access for a healthcare provider identified by an Algorand address.
+
+Actual medical files are not stored directly in the smart contract. The current implementation stores record metadata, ownership information, cryptographic hashes, and access permissions on Algorand LocalNet.
+
+---
 
 ## Objectives
 
-- Develop a secure healthcare record management system.
-- Use Algorand blockchain for access-control management.
-- Maintain healthcare record integrity using cryptographic hashes.
-- Allow patients to grant and revoke access.
-- Maintain a transparent authorization and audit trail.
-- Prevent unauthorized access to healthcare records.
+- Develop a blockchain-based healthcare record management system.
+- Use Algorand smart contracts for access-control management.
+- Maintain record integrity using cryptographic hashes.
+- Allow a patient to grant provider access.
+- Allow a patient to revoke provider access.
+- Retrieve record ownership and cryptographic hash information.
+- Provide a web-based interface for interacting with the blockchain.
+- Demonstrate blockchain-backed authorization using Algorand LocalNet.
+
+---
 
 ## System Architecture
 
-The system consists of:
+The system consists of the following components:
 
-1. Patient
-2. Hospital / Doctor
-3. Application Backend
-4. Algorand Smart Contract
-5. Off-chain encrypted record storage
-
-Sensitive healthcare records are not stored directly on the blockchain. Instead, cryptographic hashes and access-control information are maintained on-chain while the actual records remain in protected off-chain storage.
-
-## Key Features
-
-### Patient
-
-- Register healthcare records
-- Grant access to healthcare providers
-- Revoke previously granted access
-- View authorization history
-- Verify record integrity
-
-### Healthcare Provider
-
-- Request access to records
-- Verify authorization
-- Access records when permission is granted
-- Verify record integrity
-
-### Blockchain
-
-- Access-control management
-- Record hash verification
-- Authorization tracking
-- Tamper-evident audit trail
-
-## Technology Stack
-
-- Algorand
-- Algorand Smart Contracts
-- Python
-- JavaScript
-- HTML
-- CSS
-- Git
-- GitHub
-
-## Security Approach
-
-Actual healthcare records are kept off-chain.
+1. Patient / Record Owner
+2. Healthcare Provider
+3. Web Frontend
+4. FastAPI Backend
+5. Algorand Typed Client
+6. Algorand Smart Contract
+7. Algorand LocalNet
 
 ```text
-Healthcare Record
-       |
-       v
-Encrypted Off-chain Storage
-       |
-       v
-Cryptographic Hash
-       |
-       v
-Algorand Blockchain
+                    Secure Health Records
+                            |
+                            v
+                    +---------------+
+                    | Web Frontend  |
+                    | HTML/CSS/JS   |
+                    +-------+-------+
+                            |
+                            | HTTP / REST API
+                            v
+                    +---------------+
+                    | FastAPI       |
+                    | Backend       |
+                    +-------+-------+
+                            |
+                            v
+                    +---------------+
+                    | Blockchain    |
+                    | Integration   |
+                    +-------+-------+
+                            |
+                            v
+                    +---------------+
+                    | Algorand      |
+                    | Typed Client  |
+                    +-------+-------+
+                            |
+                            v
+                    +---------------+
+                    | Smart         |
+                    | Contract      |
+                    +-------+-------+
+                            |
+                            v
+                    +---------------+
+                    | Algorand      |
+                    | LocalNet      |
+                    +---------------+
