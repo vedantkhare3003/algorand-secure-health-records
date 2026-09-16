@@ -1,0 +1,369 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --text: #172033;
+    --muted: #667085;
+    --border: #e4e7ec;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --shadow: 0 8px 24px rgba(16, 24, 40, 0.07);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.app {
+    width: min(1180px, 92%);
+    margin: 0 auto;
+    padding: 32px 0 40px;
+}
+
+/* Header */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.header p {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.network-status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 15px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #98a2b3;
+}
+
+.status-dot.connected {
+    background: var(--success);
+}
+
+.status-dot.error {
+    background: var(--danger);
+}
+
+
+/* Blockchain Card */
+
+.blockchain-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-item span:last-child {
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+
+/* Cards */
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+}
+
+.card-header {
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.card-header p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+
+/* Forms */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+input::placeholder {
+    color: #98a2b3;
+}
+
+
+/* Buttons */
+
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s, background 0.15s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.primary-btn:hover {
+    background: var(--primary-dark);
+}
+
+.secondary-btn {
+    background: #eef2f7;
+    color: #344054;
+}
+
+.success-btn {
+    background: var(--success);
+    color: white;
+}
+
+.danger-btn {
+    background: var(--danger);
+    color: white;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+/* Search */
+
+.input-button {
+    display: flex;
+    gap: 10px;
+}
+
+.input-button input {
+    flex: 1;
+}
+
+
+/* Record information */
+
+.record-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.data-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fafbfc;
+}
+
+.data-box span:last-child {
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+
+/* Results */
+
+.result {
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.result.success {
+    color: var(--success);
+}
+
+.result.error {
+    color: var(--danger);
+}
+
+
+/* Access status */
+
+.access-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+}
+
+.access-badge {
+    display: inline-flex;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.access-badge.granted {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.access-badge.revoked {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.access-badge.neutral {
+    background: #f2f4f7;
+    color: #667085;
+}
+
+
+/* Footer */
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.footer-small {
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+
+/* Responsive */
+
+@media (max-width: 800px) {
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .blockchain-card {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid,
+    .record-info {
+        grid-template-columns: 1fr;
+    }
+
+    .input-button {
+        flex-direction: column;
+    }
+
+    .header h1 {
+        font-size: 26px;
+    }
+}
