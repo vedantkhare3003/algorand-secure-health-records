@@ -1,9 +1,9 @@
 const API_BASE = "http://127.0.0.1:8000";
 
 
-// --------------------------------------------------
-// Helper: Display Result
-// --------------------------------------------------
+// ============================================================
+// HELPER — DISPLAY RESULT
+// ============================================================
 
 function showResult(elementId, message, type = "success") {
     const element = document.getElementById(elementId);
@@ -13,60 +13,161 @@ function showResult(elementId, message, type = "success") {
 }
 
 
-// --------------------------------------------------
-// Check Blockchain Status
-// --------------------------------------------------
+// ============================================================
+// HELPER — BUTTON LOADING STATE
+// ============================================================
 
-async function checkBlockchainStatus() {
+function setButtonLoading(buttonId, loading, text = "") {
+    const button = document.getElementById(buttonId);
 
-    const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("statusText");
+    if (!button) {
+        return;
+    }
+
+    if (loading) {
+        button.dataset.originalText = button.textContent;
+        button.textContent = "Processing...";
+        button.disabled = true;
+    } else {
+        button.textContent =
+            text || button.dataset.originalText || "Submit";
+
+        button.disabled = false;
+    }
+}
+
+
+// ============================================================
+// HELPER — COPY TEXT
+// ============================================================
+
+async function copyText(elementId) {
+
+    const element = document.getElementById(elementId);
+
+    if (!element) {
+        return;
+    }
+
+    const text = element.textContent.trim();
+
+    if (!text || text === "-") {
+        return;
+    }
 
     try {
 
-        const response = await fetch(`${API_BASE}/health`);
+        await navigator.clipboard.writeText(text);
+
+        const buttons = document.querySelectorAll(
+            `[onclick="copyText('${elementId}')"]`
+        );
+
+        buttons.forEach(button => {
+
+            const originalText = button.textContent;
+
+            button.textContent = "Copied!";
+
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 1200);
+
+        });
+
+    } catch (error) {
+
+        console.error("Copy failed:", error);
+
+    }
+}
+
+
+// ============================================================
+// BLOCKCHAIN STATUS
+// ============================================================
+
+async function checkBlockchainStatus() {
+
+    const statusDot =
+        document.getElementById("statusDot");
+
+    const statusText =
+        document.getElementById("statusText");
+
+    try {
+
+        const response =
+            await fetch(`${API_BASE}/health`);
 
         if (!response.ok) {
             throw new Error("Backend unavailable");
         }
 
-        const data = await response.json();
+        const data =
+            await response.json();
+
 
         document.getElementById("network").textContent =
             data.network;
 
+
         document.getElementById("appId").textContent =
             data.application_id;
+
 
         document.getElementById("appAddress").textContent =
             data.application_address;
 
-        statusDot.className = "status-dot connected";
-        statusText.textContent = "Blockchain Connected";
+
+        statusDot.className =
+            "status-dot connected";
+
+        statusText.textContent =
+            "Blockchain Connected";
 
     } catch (error) {
 
-        statusDot.className = "status-dot error";
-        statusText.textContent = "Blockchain Offline";
+        console.error(error);
 
-        document.getElementById("network").textContent = "-";
-        document.getElementById("appId").textContent = "-";
-        document.getElementById("appAddress").textContent = "-";
+        statusDot.className =
+            "status-dot error";
+
+        statusText.textContent =
+            "Blockchain Offline";
+
+
+        document.getElementById("network").textContent =
+            "-";
+
+        document.getElementById("appId").textContent =
+            "-";
+
+        document.getElementById("appAddress").textContent =
+            "-";
     }
 }
 
 
-// --------------------------------------------------
-// Register Health Record
-// --------------------------------------------------
+// ============================================================
+// REGISTER HEALTH RECORD
+// ============================================================
 
 async function registerRecord() {
 
     const recordId =
-        document.getElementById("registerRecordId").value.trim();
+        document
+            .getElementById("registerRecordId")
+            .value
+            .trim();
+
 
     const recordHash =
-        document.getElementById("registerHash").value.trim();
+        document
+            .getElementById("registerHash")
+            .value
+            .trim();
+
 
     if (!recordId || !recordHash) {
 
@@ -79,29 +180,45 @@ async function registerRecord() {
         return;
     }
 
+
+    setButtonLoading(
+        "registerBtn",
+        true
+    );
+
+
     try {
 
-        const response = await fetch(
-            `${API_BASE}/records`,
-            {
-                method: "POST",
+        const response =
+            await fetch(
+                `${API_BASE}/records`,
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                body: JSON.stringify({
-                    record_id: recordId,
-                    record_hash: recordHash
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        record_id: recordId,
+                        record_hash: recordHash
+                    })
+                }
+            );
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         if (!response.ok) {
-            throw new Error(data.detail || "Registration failed");
+
+            throw new Error(
+                data.detail || "Registration failed"
+            );
+
         }
+
 
         showResult(
             "registerResult",
@@ -109,11 +226,16 @@ async function registerRecord() {
             "success"
         );
 
-        document.getElementById("lookupRecordId").value =
-            recordId;
 
-        document.getElementById("accessRecordId").value =
-            recordId;
+        document
+            .getElementById("lookupRecordId")
+            .value = recordId;
+
+
+        document
+            .getElementById("accessRecordId")
+            .value = recordId;
+
 
     } catch (error) {
 
@@ -122,18 +244,31 @@ async function registerRecord() {
             error.message,
             "error"
         );
+
+    } finally {
+
+        setButtonLoading(
+            "registerBtn",
+            false,
+            "Register Record"
+        );
+
     }
 }
 
 
-// --------------------------------------------------
-// Get Record Information
-// --------------------------------------------------
+// ============================================================
+// GET RECORD INFORMATION
+// ============================================================
 
 async function getRecordInfo() {
 
     const recordId =
-        document.getElementById("lookupRecordId").value.trim();
+        document
+            .getElementById("lookupRecordId")
+            .value
+            .trim();
+
 
     if (!recordId) {
 
@@ -145,6 +280,13 @@ async function getRecordInfo() {
 
         return;
     }
+
+
+    setButtonLoading(
+        "searchBtn",
+        true
+    );
+
 
     try {
 
@@ -161,26 +303,45 @@ async function getRecordInfo() {
 
             ]);
 
-        const hashData = await hashResponse.json();
-        const ownerData = await ownerResponse.json();
+
+        const hashData =
+            await hashResponse.json();
+
+        const ownerData =
+            await ownerResponse.json();
+
 
         if (!hashResponse.ok) {
+
             throw new Error(
-                hashData.detail || "Unable to retrieve record hash"
+                hashData.detail ||
+                "Unable to retrieve record hash"
             );
+
         }
+
 
         if (!ownerResponse.ok) {
+
             throw new Error(
-                ownerData.detail || "Unable to retrieve record owner"
+                ownerData.detail ||
+                "Unable to retrieve record owner"
             );
+
         }
 
-        document.getElementById("recordHash").textContent =
+
+        document
+            .getElementById("recordHash")
+            .textContent =
             hashData.record_hash;
 
-        document.getElementById("recordOwner").textContent =
+
+        document
+            .getElementById("recordOwner")
+            .textContent =
             ownerData.owner;
+
 
         showResult(
             "recordResult",
@@ -188,31 +349,57 @@ async function getRecordInfo() {
             "success"
         );
 
+
     } catch (error) {
 
-        document.getElementById("recordHash").textContent = "-";
-        document.getElementById("recordOwner").textContent = "-";
+        document
+            .getElementById("recordHash")
+            .textContent = "-";
+
+
+        document
+            .getElementById("recordOwner")
+            .textContent = "-";
+
 
         showResult(
             "recordResult",
             error.message,
             "error"
         );
+
+
+    } finally {
+
+        setButtonLoading(
+            "searchBtn",
+            false,
+            "Search"
+        );
+
     }
 }
 
 
-// --------------------------------------------------
-// Get Access Form Values
-// --------------------------------------------------
+// ============================================================
+// GET ACCESS FORM VALUES
+// ============================================================
 
 function getAccessValues() {
 
     const recordId =
-        document.getElementById("accessRecordId").value.trim();
+        document
+            .getElementById("accessRecordId")
+            .value
+            .trim();
+
 
     const provider =
-        document.getElementById("providerAddress").value.trim();
+        document
+            .getElementById("providerAddress")
+            .value
+            .trim();
+
 
     return {
         recordId,
@@ -221,9 +408,9 @@ function getAccessValues() {
 }
 
 
-// --------------------------------------------------
-// Validate Access Input
-// --------------------------------------------------
+// ============================================================
+// VALIDATE ACCESS INPUT
+// ============================================================
 
 function validateAccessInput(recordId, provider) {
 
@@ -238,6 +425,7 @@ function validateAccessInput(recordId, provider) {
         return false;
     }
 
+
     if (!provider) {
 
         showResult(
@@ -248,6 +436,7 @@ function validateAccessInput(recordId, provider) {
 
         return false;
     }
+
 
     if (provider.length !== 58) {
 
@@ -260,46 +449,65 @@ function validateAccessInput(recordId, provider) {
         return false;
     }
 
+
     return true;
 }
 
 
-// --------------------------------------------------
-// Grant Provider Access
-// --------------------------------------------------
+// ============================================================
+// GRANT PROVIDER ACCESS
+// ============================================================
 
 async function grantAccess() {
 
     const { recordId, provider } =
         getAccessValues();
 
+
     if (!validateAccessInput(recordId, provider)) {
         return;
     }
 
+
+    setButtonLoading(
+        "grantBtn",
+        true
+    );
+
+
     try {
 
-        const response = await fetch(
-            `${API_BASE}/records/${encodeURIComponent(recordId)}/grant`,
-            {
-                method: "POST",
+        const response =
+            await fetch(
+                `${API_BASE}/records/${encodeURIComponent(recordId)}/grant`,
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                body: JSON.stringify({
-                    record_id: recordId,
-                    provider: provider
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        record_id: recordId,
+                        provider: provider
+                    })
+                }
+            );
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         if (!response.ok) {
-            throw new Error(data.detail || "Grant access failed");
+
+            throw new Error(
+                data.detail ||
+                "Grant access failed"
+            );
+
         }
+
 
         showResult(
             "accessResult",
@@ -307,7 +515,9 @@ async function grantAccess() {
             "success"
         );
 
-        await checkAccess();
+
+        await checkAccess(false);
+
 
     } catch (error) {
 
@@ -316,46 +526,74 @@ async function grantAccess() {
             error.message,
             "error"
         );
+
+
+    } finally {
+
+        setButtonLoading(
+            "grantBtn",
+            false,
+            "Grant Access"
+        );
+
     }
 }
 
 
-// --------------------------------------------------
-// Revoke Provider Access
-// --------------------------------------------------
+// ============================================================
+// REVOKE PROVIDER ACCESS
+// ============================================================
 
 async function revokeAccess() {
 
     const { recordId, provider } =
         getAccessValues();
 
+
     if (!validateAccessInput(recordId, provider)) {
         return;
     }
 
+
+    setButtonLoading(
+        "revokeBtn",
+        true
+    );
+
+
     try {
 
-        const response = await fetch(
-            `${API_BASE}/records/${encodeURIComponent(recordId)}/revoke`,
-            {
-                method: "POST",
+        const response =
+            await fetch(
+                `${API_BASE}/records/${encodeURIComponent(recordId)}/revoke`,
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                body: JSON.stringify({
-                    record_id: recordId,
-                    provider: provider
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        record_id: recordId,
+                        provider: provider
+                    })
+                }
+            );
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         if (!response.ok) {
-            throw new Error(data.detail || "Revoke access failed");
+
+            throw new Error(
+                data.detail ||
+                "Revoke access failed"
+            );
+
         }
+
 
         showResult(
             "accessResult",
@@ -363,7 +601,9 @@ async function revokeAccess() {
             "success"
         );
 
-        await checkAccess();
+
+        await checkAccess(false);
+
 
     } catch (error) {
 
@@ -372,75 +612,136 @@ async function revokeAccess() {
             error.message,
             "error"
         );
+
+
+    } finally {
+
+        setButtonLoading(
+            "revokeBtn",
+            false,
+            "Revoke Access"
+        );
+
     }
 }
 
 
-// --------------------------------------------------
-// Check Provider Access
-// --------------------------------------------------
+// ============================================================
+// CHECK PROVIDER ACCESS
+// ============================================================
 
-async function checkAccess() {
+async function checkAccess(showMessage = true) {
 
     const { recordId, provider } =
         getAccessValues();
+
 
     if (!validateAccessInput(recordId, provider)) {
         return;
     }
 
+
+    setButtonLoading(
+        "checkBtn",
+        true
+    );
+
+
     try {
 
-        const response = await fetch(
-            `${API_BASE}/records/${encodeURIComponent(recordId)}/access/${encodeURIComponent(provider)}`
-        );
+        const response =
+            await fetch(
+                `${API_BASE}/records/${encodeURIComponent(recordId)}/access/${encodeURIComponent(provider)}`
+            );
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         if (!response.ok) {
-            throw new Error(data.detail || "Unable to check access");
+
+            throw new Error(
+                data.detail ||
+                "Unable to check access"
+            );
+
         }
+
 
         const badge =
             document.getElementById("accessStatus");
 
+
         if (data.has_access) {
 
-            badge.textContent = "Access Granted";
-            badge.className = "access-badge granted";
+            badge.textContent =
+                "Access Granted";
+
+            badge.className =
+                "access-badge granted";
 
         } else {
 
-            badge.textContent = "Access Revoked";
-            badge.className = "access-badge revoked";
+            badge.textContent =
+                "Access Revoked";
+
+            badge.className =
+                "access-badge revoked";
         }
 
-        showResult(
-            "accessResult",
-            `Provider access status: ${data.has_access ? "GRANTED" : "REVOKED"} (value: ${data.access_value})`,
-            "success"
-        );
+
+        if (showMessage) {
+
+            showResult(
+                "accessResult",
+                `Provider access status: ${data.has_access ? "GRANTED" : "REVOKED"} (value: ${data.access_value})`,
+                "success"
+            );
+
+        }
+
 
     } catch (error) {
 
-        document.getElementById("accessStatus").textContent =
+        document
+            .getElementById("accessStatus")
+            .textContent =
             "Unknown";
 
-        document.getElementById("accessStatus").className =
+
+        document
+            .getElementById("accessStatus")
+            .className =
             "access-badge neutral";
 
-        showResult(
-            "accessResult",
-            error.message,
-            "error"
+
+        if (showMessage) {
+
+            showResult(
+                "accessResult",
+                error.message,
+                "error"
+            );
+
+        }
+
+
+    } finally {
+
+        setButtonLoading(
+            "checkBtn",
+            false,
+            "Check Access"
         );
+
     }
 }
 
 
-// --------------------------------------------------
-// Initialize Dashboard
-// --------------------------------------------------
+// ============================================================
+// INITIALIZE DASHBOARD
+// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
