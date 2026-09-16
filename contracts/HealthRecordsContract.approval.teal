@@ -1,0 +1,359 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 2 1 32
+    bytecblock 0x6f776e65725f 0x6163636573735f 0x151f7c75 0x686173685f
+    // contracts/health_records.py:4
+    // class HealthRecordsContract(ARC4Contract):
+    txn NumAppArgs
+    bz main___algopy_default_create@15
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0x153c16f2 0x909da5e1 0x99abc856 0xc01c14f4 0xe7781a9c 0x419784af // method "register_record(byte[],byte[])void", method "grant_access(byte[],address)void", method "revoke_access(byte[],address)void", method "has_access(byte[],address)uint64", method "get_record_hash(byte[])byte[]", method "get_record_owner(byte[])address"
+    txna ApplicationArgs 0
+    match register_record grant_access revoke_access has_access get_record_hash get_record_owner
+    err
+
+main___algopy_default_create@15:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// health_records.HealthRecordsContract.register_record[routing]() -> void:
+register_record:
+    // contracts/health_records.py:38
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // contracts/health_records.py:50
+    // assert record_id not in self.record_owner, "Record already exists"
+    bytec_0 // 0x6f776e65725f
+    dig 2
+    concat
+    dup
+    box_len
+    bury 1
+    !
+    assert // Record already exists
+    // contracts/health_records.py:51
+    // assert record_hash, "Record hash cannot be empty"
+    dig 1
+    len
+    assert // Record hash cannot be empty
+    // contracts/health_records.py:53
+    // self.record_owner[record_id] = Txn.sender
+    txn Sender
+    box_put
+    // contracts/health_records.py:54
+    // self.record_hash[record_id] = record_hash
+    bytec_3 // 0x686173685f
+    uncover 2
+    concat
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // contracts/health_records.py:38
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// health_records.HealthRecordsContract.grant_access[routing]() -> void:
+grant_access:
+    // contracts/health_records.py:56
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // contracts/health_records.py:66
+    // assert record_id in self.record_owner, "Record does not exist"
+    bytec_0 // 0x6f776e65725f
+    dig 2
+    concat
+    dup
+    box_len
+    bury 1
+    assert // Record does not exist
+    // contracts/health_records.py:68
+    // Txn.sender == self.record_owner[record_id]
+    txn Sender
+    swap
+    box_get
+    pop
+    ==
+    // contracts/health_records.py:67-69
+    // assert (
+    //     Txn.sender == self.record_owner[record_id]
+    // ), "Only the patient can grant access"
+    assert // Only the patient can grant access
+    // contracts/health_records.py:71
+    // access_key = record_id + provider.bytes
+    concat
+    // contracts/health_records.py:73
+    // self.access[access_key] = UInt64(1)
+    bytec_1 // 0x6163636573735f
+    swap
+    concat
+    intc_2 // 1
+    itob
+    box_put
+    // contracts/health_records.py:56
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// health_records.HealthRecordsContract.revoke_access[routing]() -> void:
+revoke_access:
+    // contracts/health_records.py:75
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // contracts/health_records.py:85
+    // assert record_id in self.record_owner, "Record does not exist"
+    bytec_0 // 0x6f776e65725f
+    dig 2
+    concat
+    dup
+    box_len
+    bury 1
+    assert // Record does not exist
+    // contracts/health_records.py:87
+    // Txn.sender == self.record_owner[record_id]
+    txn Sender
+    swap
+    box_get
+    pop
+    ==
+    // contracts/health_records.py:86-88
+    // assert (
+    //     Txn.sender == self.record_owner[record_id]
+    // ), "Only the patient can revoke access"
+    assert // Only the patient can revoke access
+    // contracts/health_records.py:90
+    // access_key = record_id + provider.bytes
+    concat
+    // contracts/health_records.py:92
+    // self.access[access_key] = UInt64(0)
+    bytec_1 // 0x6163636573735f
+    swap
+    concat
+    intc_0 // 0
+    itob
+    box_put
+    // contracts/health_records.py:75
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// health_records.HealthRecordsContract.has_access[routing]() -> void:
+has_access:
+    // contracts/health_records.py:94
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // contracts/health_records.py:104
+    // assert record_id in self.record_owner, "Record does not exist"
+    bytec_0 // 0x6f776e65725f
+    dig 2
+    concat
+    box_len
+    bury 1
+    assert // Record does not exist
+    // contracts/health_records.py:106
+    // access_key = record_id + provider.bytes
+    concat
+    // contracts/health_records.py:108
+    // if access_key in self.access:
+    bytec_1 // 0x6163636573735f
+    swap
+    concat
+    dup
+    box_len
+    bury 1
+    bz has_access_after_if_else@3
+    // contracts/health_records.py:109
+    // return self.access[access_key]
+    box_get
+    assert // check self.access entry exists
+    btoi
+
+has_access_after_inlined_health_records.HealthRecordsContract.has_access@4:
+    // contracts/health_records.py:94
+    // @arc4.abimethod
+    itob
+    bytec_2 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+has_access_after_if_else@3:
+    pop
+    // contracts/health_records.py:111
+    // return UInt64(0)
+    intc_0 // 0
+    // contracts/health_records.py:94
+    // @arc4.abimethod
+    b has_access_after_inlined_health_records.HealthRecordsContract.has_access@4
+
+
+// health_records.HealthRecordsContract.get_record_hash[routing]() -> void:
+get_record_hash:
+    // contracts/health_records.py:113
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // contracts/health_records.py:122
+    // assert record_id in self.record_owner, "Record does not exist"
+    bytec_0 // 0x6f776e65725f
+    dig 1
+    concat
+    box_len
+    bury 1
+    assert // Record does not exist
+    // contracts/health_records.py:124
+    // return self.record_hash[record_id]
+    bytec_3 // 0x686173685f
+    swap
+    concat
+    box_get
+    assert // check self.record_hash entry exists
+    // contracts/health_records.py:113
+    // @arc4.abimethod
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_2 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+
+// health_records.HealthRecordsContract.get_record_owner[routing]() -> void:
+get_record_owner:
+    // contracts/health_records.py:126
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // contracts/health_records.py:135
+    // assert record_id in self.record_owner, "Record does not exist"
+    bytec_0 // 0x6f776e65725f
+    swap
+    concat
+    dup
+    box_len
+    bury 1
+    assert // Record does not exist
+    // contracts/health_records.py:137
+    // return self.record_owner[record_id]
+    box_get
+    pop
+    // contracts/health_records.py:126
+    // @arc4.abimethod
+    bytec_2 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
